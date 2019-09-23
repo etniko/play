@@ -183,6 +183,12 @@ Error message and password prompt
 
 <li>Intro Example</li>
 
+<li>Introduction</li>
+
+<li>mymusicsheet</li>
+
+<li>sounds in tiddlywiki</li>
+
 </ul>
 </p>
 
@@ -9404,7 +9410,7 @@ Error message and password prompt
 <div status="complete" title="$:/Import">
 <pre>The following tiddlers were imported:
 
-# [[Intro Example]]</pre>
+# [[sounds in tiddlywiki]]</pre>
 </div>
 <div title="$:/isEncrypted">
 <pre>no</pre>
@@ -9607,6 +9613,133 @@ Error message and password prompt
 <pre>&lt;div class=&quot;abcjs-large&quot;&gt;
 &lt;$musicsheet tiddler=&quot;mymusicsheet&quot; midi=&quot;yes&quot; autoplay=&quot;no&quot; soundfont=&quot;tuba&quot;/&gt;
 &lt;/div&gt;</pre>
+</div>
+<div bag="default" created="20180319111113906" modified="20180320113746001" revision="0" tags="" title="Introduction" type="text/vnd.tiddlywiki">
+<pre>&lt;$reveal state=&quot;$:/state/fail&quot; type=&quot;nomatch&quot; text=&quot;yes&quot;&gt;
+&lt;$button&gt;&lt;$action-setfield $tiddler=&quot;$:/state/fail&quot; text=&quot;yes&quot;/&gt;Click Me&lt;/$button&gt;
+&lt;/$reveal&gt;
+&lt;$reveal state=&quot;$:/state/fail&quot; type=&quot;match&quot; text=&quot;yes&quot;&gt;
+&lt;$button&gt;&lt;$action-deletetiddler $tiddler=&quot;$:/state/fail&quot;/&gt;Reset&lt;/$button&gt;
+This sound is stored in [[sad-trombone.json]] ... [[more info|sounds in tiddlywiki]]
+&lt;audio autoplay src={{sad-trombone.json##sad-trombone}}/&gt;
+&lt;/$reveal&gt;
+
+!!!This is a demo/prototype of musical notation, audio and midi within [[TiddlyWiki|https://tiddlywiki.com]] using [[abcjs|https://abjcs.net]]
+
+!!![[This Tiddler|mymusicsheet]] holds a tune in abc notation
+
+!!!The [[musicsheet Widget|$:/plugins/tiddlywiki/music-score/widgets/musicsheet.js]] renders the abc notation to a real music sheet
+
+!!!The widget can also render a midi audio-player that plays it using a soundfont
+
+!!!The plugin currently comes with a ''Grand Piano'' soundfont and a ''Tuba'' soundfont ~~but midi playback is disabled at the moment, because of decoding problems of the audio/ogg file format. I hope to be able to solve that issue soon~~ (the grand-piano soundfont is [[here|$:/plugins/tiddlywiki/music-score/soundfonts/grand-piano.json]] - it's big! ~2mb)
+
+Update: On firefox ~~I'm not able to play the midi sounds~~ my AdBlocker blocks the midi sounds, on chromium it works, so it should work on chrome and tiddlydesktop, too
+
+Update: Added responsiveness
+
+Update on soundfonts: abcjs will use the embedded soundfonts soon, meanwhile it fetches sounds from a remote
+
+!!See what happens when you copy the following lines to a new tiddler
+
+&lt;&lt;copy-to-clipboard src:&quot;&quot;&quot;&lt;$musicsheet tiddler=&quot;mymusicsheet&quot;/&gt;&quot;&quot;&quot;&gt;&gt;
+```
+&lt;$musicsheet tiddler=&quot;mymusicsheet&quot;/&gt;
+```
+
+!!Try the same with midi playback
+
+&lt;&lt;copy-to-clipboard src:&quot;&quot;&quot;&lt;$musicsheet tiddler=&quot;mymusicsheet&quot; midi=&quot;yes&quot;/&gt;&quot;&quot;&quot;&gt;&gt;
+```
+&lt;$musicsheet tiddler=&quot;mymusicsheet&quot; midi=&quot;yes&quot;/&gt;
+```
+
+!!With all options
+
+&lt;&lt;copy-to-clipboard src:&quot;&quot;&quot;&lt;$musicsheet tiddler=&quot;mymusicsheet&quot; midi=&quot;yes&quot; autoplay=&quot;yes&quot; soundfont=&quot;tuba&quot;/&gt;&quot;&quot;&quot;&gt;&gt;
+```
+&lt;$musicsheet tiddler=&quot;mymusicsheet&quot; midi=&quot;yes&quot; autoplay=&quot;yes&quot; soundfont=&quot;tuba&quot;/&gt;
+```
+
+!!With all options and big player controls
+
+&lt;&lt;copy-to-clipboard src:&quot;&quot;&quot;&lt;div class=&quot;abcjs-large&quot;&gt;
+&lt;$musicsheet tiddler=&quot;mymusicsheet&quot; midi=&quot;yes&quot; autoplay=&quot;yes&quot; soundfont=&quot;tuba&quot;/&gt;
+&lt;/div&gt;&quot;&quot;&quot;&gt;&gt;
+```
+&lt;div class=&quot;abcjs-large&quot;&gt;
+&lt;$musicsheet tiddler=&quot;mymusicsheet&quot; midi=&quot;yes&quot; autoplay=&quot;yes&quot; soundfont=&quot;tuba&quot;/&gt;
+&lt;/div&gt;
+```
+
+!!!At a later point the plugin should be able to show both in one tiddler and auto-update when the notation-tiddler changes
+
+SoundFonts
+
+[[Tunes]]
+
+&lt;hr&gt;
+
+abcjs is licensed under MIT License : https://github.com/paulrosen/abcjs/blob/master/LICENSE.md
+
+
+</pre>
+</div>
+<div bag="default" created="20180319111952783" modified="20180320170704789" revision="0" title="mymusicsheet" type="text/vnd.tiddlywiki">
+<pre>X: 24
+T:Clouds Thicken
+C:Paul Rosen
+S:Copyright 2005, Paul Rosen
+M:6/8
+L:1/8
+Q:3/8=116
+R:Creepy Jig
+K:Em
+|:&quot;Em&quot;EEE E2G|&quot;C7&quot;_B2A G2F|&quot;Em&quot;EEE E2G|\
+&quot;C7&quot;_B2A &quot;B7&quot;=B3|&quot;Em&quot;EEE E2G|
+&quot;C7&quot;_B2A G2F|&quot;Em&quot;GFE &quot;D (Bm7)&quot;F2D\
+|1&quot;Em&quot;E3-E3:|2&quot;Em&quot;E3-E2B|:&quot;Em&quot;e2e gfe|
+&quot;G&quot;g2ab3|&quot;Em&quot;gfeg2e|&quot;D&quot;fedB2A|&quot;Em&quot;e2e gfe|\
+&quot;G&quot;g2ab3|&quot;Em&quot;gfe&quot;D&quot;f2d|&quot;Em&quot;e3-e3:|</pre>
+</div>
+<div bag="default" created="20180319185248667" modified="20180319190520627" revision="0" title="sounds in tiddlywiki" type="text/vnd.tiddlywiki">
+<pre>audio files can be ''base64'' encoded and stored in ''json'' tiddlers
+
+the html5 `&lt;audio&gt;` tag allows autoplay
+
+wrapping such an autoplay into a `&lt;$reveal&gt;` widget allows to play the sound with the click of a button
+
+
+&lt;hr&gt;
+
+!!!Base64 encoding:
+
+* I'm using the &quot;base64&quot; command in my terminal
+** Linux: ` base64 -w 0 infile.mp3 &gt; outfile `
+** Mac: ` base64 infile.mp3 &gt; outfile ` (may need to install base64)
+** Win10: should be the same as for Linux when using the linux subsystem
+* there are online converters and I'm sure there are some guis, too
+
+How-To:
+
+When the audio file is encoded, create a json tiddler, give the sound a name like &quot;my-sound-1&quot; and paste the content of the encoded audio file like this:
+
+```json
+{
+  &quot;my-sound-1&quot;: &quot;data:audio/mpeg;base64,HERE-COMES-THE-ENCODED-STRING&quot;
+}
+```
+
+note that you'll have to add `data:audio/mpeg;base64,` at the beginning of the encoded string if it's an mp3 ... for other audio types this is different. For .ogg files for example it's `data:audio/ogg;base64,`
+
+
+...
+
+Now you can access the sound with 
+
+```
+&lt;audio autoplay src={{jsontiddlerwhereit'sstored##my-sound-1}}/&gt;
+```</pre>
 </div>
 
 </div>
