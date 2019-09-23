@@ -145,6 +145,8 @@ Error message and password prompt
 
 <li>$:/core</li>
 
+<li>$:/DefaultTiddlers</li>
+
 <li>$:/GitHub/Filename</li>
 
 <li>$:/GitHub/Path</li>
@@ -157,9 +159,13 @@ Error message and password prompt
 
 <li>$:/isEncrypted</li>
 
+<li>$:/plugins/tiddlywiki/music-score/widgets/musicsheet.js</li>
+
 <li>$:/SiteSubtitle</li>
 
 <li>$:/SiteTitle</li>
+
+<li>$:/state/fail</li>
 
 <li>$:/state/tab--1963855381</li>
 
@@ -167,11 +173,15 @@ Error message and password prompt
 
 <li>$:/state/tab-2065006209</li>
 
+<li>$:/state/tab/moresidebar-1850697562</li>
+
 <li>$:/state/tab/sidebar--595412856</li>
 
 <li>$:/StoryList</li>
 
 <li>$:/temp/info-plugin</li>
+
+<li>$:/temp/search</li>
 
 <li>$:/theme</li>
 
@@ -9401,6 +9411,10 @@ Error message and password prompt
     }
 }</pre>
 </div>
+<div created="20190923042223547" modified="20190923042337384" title="$:/DefaultTiddlers">
+<pre>Tunes
+</pre>
+</div>
 <div created="20190923023400793" modified="20190923023403990" title="$:/GitHub/Filename">
 <pre>index.html</pre>
 </div>
@@ -9416,10 +9430,136 @@ Error message and password prompt
 <div status="complete" title="$:/Import">
 <pre>The following tiddlers were imported:
 
-# [[sounds in tiddlywiki]]</pre>
+# [[$:/plugins/tiddlywiki/music-score/widgets/musicsheet.js]]</pre>
 </div>
 <div title="$:/isEncrypted">
 <pre>no</pre>
+</div>
+<div module-type="widget" title="$:/plugins/tiddlywiki/music-score/widgets/musicsheet.js" type="application/javascript">
+<pre>/*\
+title: $:/plugins/tiddlywiki/music-score/widgets/musicsheet.js
+type: application/javascript
+module-type: widget
+
+renders abc music-notation to musical sheets
+
+\*/
+(function (global) {
+
+&quot;use strict&quot;;
+/*jslint node: true, browser: true */
+/*global $tw: false */
+
+var Widget = require(&quot;$:/core/modules/widgets/widget.js&quot;).widget;
+
+if (typeof window !== 'undefined') {
+  var ABC = require(&quot;$:/plugins/tiddlywiki/music-score/abcjs-midi.js&quot;);
+}
+
+var ABCJSWidget = function(parseTreeNode,options) {
+	this.initialise(parseTreeNode,options);
+};
+
+/*
+Inherit from the base widget class
+*/
+ABCJSWidget.prototype = new Widget();
+
+
+ABCJSWidget.prototype.render = function(parent,nextSibling) {
+    var self  = this;
+    this.parentDomNode = parent;
+
+    this.computeAttributes();
+    this.execute();
+    this.pNode = this.document.createElement(&quot;div&quot;);
+    parent.insertBefore(this.pNode,nextSibling);
+    if (this.tiddler) {
+        this.tunebookString = $tw.wiki.getTiddlerText(self.tiddler);
+        ABCJS.renderAbc(this.pNode, this.tunebookString);
+        var width = parent.clientWidth*2/3;
+        this.parentwidth = parent.clientWidth;
+
+        ABCJS.renderAbc(this.pNode, &quot;%%staffwidth &quot;+width+&quot;\n&quot;+this.tunebookString, {
+        hint_measures: self.hintMeasures,
+        responsive: &quot;resize&quot;,
+        add_classes: true,
+        oneSvgPerLine: self.svgPerLine
+    });
+    }
+    this.domNodes.push(this.pNode);
+    
+    if (self.renderMidi === true) {
+      this.tunebookString = $tw.wiki.getTiddlerText(self.tiddler);
+      this.pNode2 = self.document.createElement(&quot;div&quot;);
+      self.parentDomNode.insertBefore(this.pNode2,nextSibling);
+    //if (typeof(MIDI) === 'undefined') 
+    var MIDI = {};
+    //if (typeof(MIDI.Soundfont) === 'undefined')
+    MIDI.Soundfont = {};
+    if (self.soundfont === &quot;grand-piano&quot;) {
+    MIDI.Soundfont.acoustic_grand_piano = $tw.wiki.getTiddlerText(&quot;$:/plugins/tiddlywiki/music-score/soundfonts/grand-piano.json&quot;);
+  } else if (self.soundfont === &quot;tuba&quot;) {
+    MIDI.Soundfont.acoustic_grand_piano = $tw.wiki.getTiddlerText(&quot;$:/plugins/tiddlywiki/music-score/soundfonts/tuba.json&quot;);
+  }
+    //console.log(MIDI.Soundfont);
+    //var tuneMidiObjectArray = 
+    ABCJS.renderMidi(this.pNode2, self.tunebookString, {
+        generateDownload: true,
+        downloadLabel: &quot;download midi&quot;,
+        inlineControls: {
+            loopToggle: true,
+            startPlaying: self.autoPlay
+        },
+        startingTune: 0
+    });
+    self.domNodes.push(this.pNode2);
+  }
+
+    self.parentDomNode.addEventListener(&quot;resize&quot;,function (event) {
+        if (self.parentwidth != self.parentDomNode.clientWidth) {
+            var width = parent.clientWidth*2/3;
+            self.parentwidth = parent.clientWidth;
+            ABCJS.renderAbc(self.pNode, &quot;%%staffwidth &quot;+width+&quot;\n&quot;+self.tunebookString);
+        }
+        return true;
+    },false)
+
+    this.renderChildren(self.parentDomNode,nextSibling);
+};
+
+/*
+Compute the internal state of the widget
+*/
+ABCJSWidget.prototype.execute = function() {
+    this.tiddler = this.getAttribute(&quot;tiddler&quot;,undefined);
+    this.renderMidi = this.getAttribute(&quot;midi&quot;,&quot;&quot;) === &quot;yes&quot;;
+    this.soundfont = this.getAttribute(&quot;soundfont&quot;,&quot;&quot;);
+    this.svgPerLine = this.getAttribute(&quot;separatelines&quot;) === &quot;yes&quot;;
+    this.hintMeasures = this.getAttribute(&quot;hints&quot;) === &quot;yes&quot;;
+    this.autoPlay = this.getAttribute(&quot;autoplay&quot;) === &quot;yes&quot;;
+    this.makeChildWidgets();
+};
+
+/*
+Selectively refreshes the widget if needed. Returns true if the widget or any of its children needed re-rendering
+*/
+ABCJSWidget.prototype.refresh = function(changedTiddlers) {
+  	var changedAttributes = this.computeAttributes();
+	if(Object.keys(changedAttributes).length) { // || changedTiddlers.indexOf(this.tiddler) !== -1 
+		this.refreshSelf();
+		return true;
+	}
+    var musicSheetTiddler = this.tiddler;
+    if(Object.keys(changedTiddlers).indexOf(musicSheetTiddler) !== -1 ) {
+        this.refreshSelf();
+        return true;
+    }
+	return this.refreshChildren(changedTiddlers);
+};
+
+exports.musicsheet = ABCJSWidget;
+})();</pre>
 </div>
 <div created="20190923023308469" modified="20190923023311625" title="$:/SiteSubtitle">
 <pre>scores</pre>
@@ -9427,19 +9567,25 @@ Error message and password prompt
 <div created="20190923023304070" modified="20190923023304929" title="$:/SiteTitle">
 <pre>play</pre>
 </div>
+<div created="20190923042455923" modified="20190923042455923" title="$:/state/fail">
+<pre>yes</pre>
+</div>
 <div created="20190923024210740" modified="20190923024210741" title="$:/state/tab--1963855381">
 <pre>$:/core/ui/ControlPanel/StoryView</pre>
 </div>
-<div created="20190923023325178" modified="20190923024200496" title="$:/state/tab-1749438307">
-<pre>$:/core/ui/ControlPanel/Appearance</pre>
+<div created="20190923023325178" modified="20190923042320145" title="$:/state/tab-1749438307">
+<pre>$:/core/ui/ControlPanel/Info</pre>
 </div>
-<div created="20190923023329998" modified="20190923023329999" title="$:/state/tab-2065006209">
-<pre>$:/core/ui/ControlPanel/Saving/GitHub</pre>
+<div created="20190923023329998" modified="20190923042316064" title="$:/state/tab-2065006209">
+<pre>$:/core/ui/ControlPanel/Saving/General</pre>
 </div>
-<div created="20190923024141294" modified="20190923024517809" title="$:/state/tab/sidebar--595412856">
+<div created="20190923042357111" modified="20190923042405473" title="$:/state/tab/moresidebar-1850697562">
+<pre>$:/core/ui/MoreSideBar/Shadows</pre>
+</div>
+<div created="20190923024141294" modified="20190923042440256" title="$:/state/tab/sidebar--595412856">
 <pre>$:/core/ui/SideBar/Recent</pre>
 </div>
-<div created="20190923041431766" list="$:/Import Tunes mymusicsheet [[Intro Example]] GettingStarted" modified="20190923041445379" title="$:/StoryList">
+<div created="20190923042348569" list="$:/Import Introduction mymusicsheet [[Intro Example]] Tunes" modified="20190923042505679" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -9499,6 +9645,9 @@ Error message and password prompt
         }
     }
 }</pre>
+</div>
+<div created="20190923042250500" modified="20190923042344947" title="$:/temp/search">
+<pre></pre>
 </div>
 <div created="20190923024204528" modified="20190923024204529" title="$:/theme">
 <pre>$:/themes/tiddlywiki/snowwhite</pre>
